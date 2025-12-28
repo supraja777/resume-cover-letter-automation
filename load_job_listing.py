@@ -13,8 +13,8 @@ def fetch_and_save_json(url: str, local_file: str = "job_listings.json"):
     """
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raises HTTPError for bad status
-        data = response.json()  # Parse JSON from response
+        response.raise_for_status()  
+        data = response.json()
 
         # Save locally
         with open(local_file, "w", encoding="utf-8") as f:
@@ -27,8 +27,8 @@ def fetch_and_save_json(url: str, local_file: str = "job_listings.json"):
     except ValueError as e:
         print(f"Error parsing JSON: {e}")
 
-    # Load your job listings JSON
-    with open("job_listings.json", "r", encoding="utf-8") as f:
+def filter_jobs(input_file_path : str = "job_listings.json", output_file_path : str = "filtered_jobs.json"):
+    with open(input_file_path, "r", encoding="utf-8") as f:
         jobs = json.load(f)
 
     # Get today's date
@@ -37,13 +37,15 @@ def fetch_and_save_json(url: str, local_file: str = "job_listings.json"):
     yesterday = (datetime.now(timezone.utc) - timedelta(days=2)).date()
 
     # Filter jobs posted today
-    jobs_posted_today = [
-        job for job in jobs
-        if job.get("date_posted", 0) == 1751392325
-    ]
+    # jobs_posted_today = [
+    #     job for job in jobs
+    #     if job.get("date_posted", 0) == 1751392325
+    # ]
+
+    jobs_posted_today = jobs[0:5]
 
     # Save to a separate JSON file
-    output_file = Path("job_listings_today.json")
+    output_file = Path(output_file_path)
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(jobs_posted_today, f, indent=2)
 

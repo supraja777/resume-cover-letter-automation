@@ -30,33 +30,28 @@ web_extraction_template = PromptTemplate(
 )
 
 
-def extract_job_information(llm):
-    with open("job_listings_today.json", "r", encoding="utf-8") as f:
+def extract_job_information(llm, filtered_jobs_path: str, JOB_INFORMATION_PATH: str):
+    with open(filtered_jobs_path, "r", encoding="utf-8") as f:
             jobs = json.load(f)
 
     extract_application_information_chain = web_extraction_template | llm.with_structured_output(jobInformation)
 
-    job_urls = []
+    # print(job_urls)
+
+    job_information = []
 
     for job in jobs:
         job_url = job.get("url", 0)
-        job_urls.append(job_url)
-
-    # print(job_urls)
-
-    url_job_information = []
-
-    for job_url in job_urls:
+        company_name = job.get("company_name", 0)
+        
         input_data = {"url": job_url}
         application_information = extract_application_information_chain.invoke(input_data)
-        url_job_information.append([job_url, application_information.job_info])
+        job_information.append([job_url, application_information.job_info])
         # print("Application information - ", application_information)
 
-    # print(url_job_information)
+    # print(job_information)
 
-    json_compatible = [[url, info] for url, info in url_job_information]
+    json_compatible = [[url, info] for url, info in job_information]
 
-    output_file = "url_job_information.json"
-
-    with open(output_file, "w", encoding="utf-8") as f:
+    with open(JOB_INFORMATION_PATH, "w", encoding="utf-8") as f:
             json.dump(json_compatible, f, indent=2)

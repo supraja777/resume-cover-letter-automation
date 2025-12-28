@@ -50,8 +50,8 @@ def create_cover_letter(url, job_information, llm, resume):
 
     return create_cover_letter_chain.invoke(input_data).cover_letter
 
-def generate_cover_letter(llm, resume, service):
-    with open("job_information.json", "r", encoding="utf-8") as f:
+def generate_cover_letter(llm, resume, service, job_information):
+    with open(job_information, "r", encoding="utf-8") as f:
         all_jobs = json.load(f)
     
     cover_letters = []
@@ -67,7 +67,7 @@ def generate_cover_letter(llm, resume, service):
 
         job_name = "XYZ"
         cnt+=1
-        job_role = "Software developer.pdf"
+        job_role = "Software_developer.pdf"
 
         cover_letter_to_pdf(cover_letter,  job_name + str(cnt) + job_role)
 
