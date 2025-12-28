@@ -4,6 +4,11 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from pydantic import BaseModel, Field
 
+from generate_cover_letter import create_cover_letter
+from convert_to_pdf import cover_letter_to_pdf
+from send_pdf_gmail import send_pdf_gmail
+from pathlib import Path
+
 class jobInformation(BaseModel):
     job_info: str = Field(..., description="Extracted job information text here")
 
@@ -29,29 +34,51 @@ web_extraction_template = PromptTemplate(
     """
 )
 
+def convert_to_pdf_send_email(cover_letter, cover_letter_path, service):
 
-def extract_job_information(llm, filtered_jobs_path: str, JOB_INFORMATION_PATH: str):
-    with open(filtered_jobs_path, "r", encoding="utf-8") as f:
+    print(cover_letter_path)
+    cover_letter_to_pdf(cover_letter, cover_letter_path)
+
+    send_pdf_gmail(
+        service=service,
+        to_email="suprajasrikanth872@gmail.com",
+        subject="Cover Letter – Application",
+        body="Please find my cover letter attached.",
+        pdf_path = cover_letter_path
+    )
+
+    # cover_letters.append([url, cover_letter])
+
+def get_file_path(company_name:str, title:str):
+    BASE_DIR = Path(__file__).resolve().parent
+    COVER_LETTER_DIR = BASE_DIR / "cover_letter" / "outputs"
+    COVER_LETTER_DIR.mkdir(parents=True, exist_ok=True)
+    file_name = company_name + title + ".pdf"
+
+    pdf_path = COVER_LETTER_DIR / file_name
+    return pdf_path
+
+def send_cv(llm, JOB_LISTING: str, resume, service):
+    with open(JOB_LISTING, "r", encoding="utf-8") as f:
             jobs = json.load(f)
 
     extract_application_information_chain = web_extraction_template | llm.with_structured_output(jobInformation)
 
-    # print(job_urls)
+    jobs_posted_today = jobs[0:5]
 
-    job_information = []
-
-    for job in jobs:
+    for job in jobs_posted_today:
         job_url = job.get("url", 0)
         company_name = job.get("company_name", 0)
-        
+        title = job.get("title", 0)
+
         input_data = {"url": job_url}
         application_information = extract_application_information_chain.invoke(input_data)
-        job_information.append([job_url, application_information.job_info])
-        # print("Application information - ", application_information)
 
-    # print(job_information)
+        cover_letter = create_cover_letter(job_url, application_information, llm, resume)
 
-    json_compatible = [[url, info] for url, info in job_information]
+        file_path = get_file_path(company_name, title)
 
-    with open(JOB_INFORMATION_PATH, "w", encoding="utf-8") as f:
-            json.dump(json_compatible, f, indent=2)
+        if cover_letter:
+             convert_to_pdf_send_email(cover_letter, file_path, service)
+        else:
+             print("Cover letter is NULL for ", job_url)

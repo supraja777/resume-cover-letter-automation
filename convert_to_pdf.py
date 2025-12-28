@@ -5,12 +5,8 @@ from pathlib import Path
 # Creates a directory for coverletters and 
 # Converts the given text and saves as pdf
 
-def cover_letter_to_pdf(cover_letter_text, output_path):
-    BASE_DIR = Path(__file__).resolve().parent
-    COVER_LETTER_DIR = BASE_DIR / "cover_letter" / "outputs"
-    COVER_LETTER_DIR.mkdir(parents=True, exist_ok=True)
-
-    pdf_path = COVER_LETTER_DIR / output_path
+def cover_letter_to_pdf(cover_letter_text, pdf_path):
+   
 
     doc = SimpleDocTemplate(str(pdf_path))
 
