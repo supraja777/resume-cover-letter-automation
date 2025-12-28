@@ -8,14 +8,11 @@ from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 load_dotenv()
 
-
-
 llm = ChatGroq(model = "llama-3.3-70b-versatile")
 
 service = authenticate_gmail()
 
 fetch_and_save_json(JOB_LINKS)
-# filter_jobs(JOB_LISTING, FILTERED_JOBS_PATH)
 
 resume = extract_text_from_pdf(llm, RESUME_PATH)
 

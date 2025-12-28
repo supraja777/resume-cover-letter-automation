@@ -20,6 +20,8 @@ create_cover_letter_template = PromptTemplate(
     You are an expert career assistant specialized in writing professional and compelling cover letters.
 
     You will write the cover letter using attached resume. 
+
+    You will write the cover letter in 200 words
     
     Task:
     Using the job information provided, generate a **well-structured, tailored cover letter** that highlights the candidate's skills, experience, and enthusiasm for the role. The cover letter should:
