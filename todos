@@ -1,0 +1,17 @@
+Basic and done
+
+1. Fix the prompt for cv generation
+2. Fix the CV style
+3. Fix email content
+
+Phase-2
+
+1. Use another LLM to check if it is aligned with resume attached and JD [Hallucination checker]
+
+2 LLM-as-Judge
+
+   Use 3-4 LLMs ask them to generate CV, ask them to output confidence score and a reason why their CV is best
+   For each LLM output - Hallucination score - An a Judge will decide on best CV - Based on creativity, relevance, hallucination, answer given by each LLM
+
+3 Multiple Resume option
+
